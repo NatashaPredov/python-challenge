@@ -1,0 +1,46 @@
+# Unit 2 | Homework Assignment: Automate Your Day Job with Python - PyBank
+#importing csv file 
+import csv
+import pandas as pd
+from pathlib import Path
+from csv import reader
+pybank_path = Path('budget_data.csv')
+analysis_output = Path('pybank.txt')
+#creating a dataframe from the csv file 
+pybank_df = pd.read_csv(pybank_path)
+#Assigning a variable and value to the sum of total months to Determining the total number of months included in the dataset 
+total_months = pybank_df["Date"].count()
+# Assign a variable and value to calculate the  net total amount of Profit/Losses over the entire period.
+total = pybank_df["Profit/Losses"].sum()
+#creating a shifted_column which calculates the difference between value and the value above it to help determine the average changes 
+pybank_df['shifted_column'] = pybank_df['Profit/Losses'].shift(1)
+pybank_df['difference'] = pybank_df["Profit/Losses"] - pybank_df["shifted_column"]
+pybank_df['difference']
+# Create a variable for the average of the changes in Profit/Losses over the entire period.
+average_difference = pybank_df['difference'].mean()
+# Create a variable for the greatest increase in profits (date and amount) over the entire period.
+greatest_increase = pybank_df['difference'].max()
+pybank_df.loc[pybank_df['difference']==greatest_increase]
+date1 = pybank_df.loc[25,'Date']
+#creating a variable for the greatest decrease in losses (date and amount) over the entire period.
+greatest_decrease= pybank_df['difference'].min()
+pybank_df.loc[pybank_df['difference']==greatest_decrease]
+date2 = pybank_df.loc[44,'Date']
+# Logic for printing
+
+print(f"Financial Statement")
+print(f"----------------------")
+print(f'Total Months: {total_months}')
+print(f'Total: ${total}')
+print(f'Average Change: ${average_difference}')
+print(f'Greatest Increase in profit:', f'{date1}', f'(${greatest_increase})')
+print(f'Greatest Decrease in profit:', f'{date2}', f'(${greatest_decrease})')
+#Print the analysis and export the analysis to a text file that contains the final results
+with open(analysis_output,'w') as txt_file:
+  txt_file.write(f"Financial Statement")
+  txt_file.write(f"----------------------")
+  txt_file.write(f'Total Months: {total_months}')
+  txt_file.write(f'Total: ${total}')
+  txt_file.write(f'Average Change: ${average_difference}')
+  txt_file.write(f'Greatest Increase in profit:, {date1}, (${greatest_increase})')
+  txt_file.write(f'Greatest Decrease in profit:, {date2}, (${greatest_decrease})')
